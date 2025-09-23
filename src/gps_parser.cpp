@@ -2,6 +2,7 @@
 #include <sstream>
 #include <algorithm>
 #include <ranges>  // C++20 ranges
+#include <limits>
 
 std::optional<GPSData> parseNMEA(const std::string& sentence) {
     if (sentence.rfind("$GPRMC", 0) != 0) return std::nullopt;  // Basic check for RMC sentence
@@ -17,8 +18,17 @@ std::optional<GPSData> parseNMEA(const std::string& sentence) {
 
     // Parse latitude (e.g., 4807.038,N -> 48.1173)
     auto parseCoord = [](const std::string& degMin, const std::string& dir) -> double {
-        double degrees = std::stod(degMin.substr(0, degMin.size() - 5));  // e.g., 48
-        double minutes = std::stod(degMin.substr(degMin.size() - 5)) / 60.0;  // e.g., 07.038 / 60
+        // Format is ddmm.mmm for latitude and dddmm.mmm for longitude.
+        // Split degrees and minutes based on the decimal point position.
+        auto dotPos = degMin.find('.');
+        if (dotPos == std::string::npos || dotPos < 2) return std::numeric_limits<double>::quiet_NaN();
+        // Minutes start 2 characters before the decimal point
+        size_t minStart = dotPos - 2;
+        if (minStart == 0) return std::numeric_limits<double>::quiet_NaN();
+        std::string degStr = degMin.substr(0, minStart);
+        std::string minStr = degMin.substr(minStart);
+        double degrees = std::stod(degStr);
+        double minutes = std::stod(minStr) / 60.0;
         double coord = degrees + minutes;
         return (dir == "S" || dir == "W") ? -coord : coord;
     };
