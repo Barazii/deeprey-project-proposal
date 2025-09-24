@@ -1,11 +1,10 @@
 #include "gps_parser.h"
 #include <sstream>
 #include <algorithm>
-#include <ranges>  // C++20 ranges
 #include <limits>
 
 std::optional<GPSData> parseNMEA(const std::string& sentence) {
-    if (sentence.rfind("$GPRMC", 0) != 0) return std::nullopt;  // Basic check for RMC sentence
+    if (sentence.rfind("$GPRMC", 0) != 0) return std::nullopt;
 
     std::stringstream ss(sentence);
     std::vector<std::string> fields;

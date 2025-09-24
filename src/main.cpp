@@ -24,7 +24,6 @@ int main()
     planner.addWaypoint({51.5074, -0.1278}); // End: London
     std::cout << "Total route distance: " << planner.totalDistance() << " km\n";
 
-    // Simulate logging to file (e.g., for app state)
     std::jthread logger([&gpsOpt, &planner]
                         {
     std::ofstream log("nav_log.txt");

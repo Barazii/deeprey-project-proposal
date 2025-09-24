@@ -1,6 +1,4 @@
 #include "route_planner.h"
-#include <numeric>
-#include <ranges>
 
 void RoutePlanner::addWaypoint(const Waypoint &wp)
 {
